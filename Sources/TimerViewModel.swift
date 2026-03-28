@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import UserNotifications
 
 final class TimerViewModel: ObservableObject {
     @Published var remainingSeconds: Int
@@ -46,6 +47,20 @@ final class TimerViewModel: ObservableObject {
         self.selectedSound = sound
         self.remainingSeconds = mins * 60
         self.totalSeconds = mins * 60
+        requestNotificationPermission()
+    }
+
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    private func sendNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Pomodoro Complete"
+        content.body = "Your \(durationMinutes)-minute session is done. Time for a break!"
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 
     func toggle() {
@@ -92,5 +107,6 @@ final class TimerViewModel: ObservableObject {
         pause()
         isComplete = true
         NSSound(named: NSSound.Name(selectedSound))?.play()
+        sendNotification()
     }
 }
