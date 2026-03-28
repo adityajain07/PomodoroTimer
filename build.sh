@@ -22,6 +22,9 @@ swiftc \
 
 cp Info.plist "$APP_BUNDLE/Contents/"
 
+echo "Signing app..."
+codesign --force --sign - --entitlements PomodoroTimer.entitlements "$APP_BUNDLE"
+
 echo "Build complete: $APP_BUNDLE"
 echo ""
 echo "To run:  open $APP_BUNDLE"
